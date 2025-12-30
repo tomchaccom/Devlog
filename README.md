@@ -26,6 +26,20 @@ app/
 ```
 
 ## 5. How to Run the Server (Local)
+### 0) 환경 변수 설정
+- `OPENAI_API_KEY`: OpenAI 호환 API 키 (필수)
+- `LLM_BASE_URL`: OpenAI 호환 API 베이스 URL (선택, 미설정 시 스텁 응답)
+- `LLM_MODEL`: 사용할 모델명 (선택, 미설정 시 스텁 응답)
+
+```bash
+export OPENAI_API_KEY="your-api-key"
+export LLM_BASE_URL="https://api.openai.com"
+export LLM_MODEL="gpt-4o-mini"
+```
+
+> `OPENAI_API_KEY`가 없으면 `LLM_BASE_URL`과 `LLM_MODEL`이 설정된 경우 즉시 에러를 반환합니다.  
+> 하위 호환을 위해 `OPENAI_API_KEY`가 없고 `LLM_API_KEY`만 있는 경우에도 동작합니다.
+
 ### 1) 가상환경 생성
 ```bash
 python -m venv .venv

@@ -19,8 +19,11 @@ def _build_llm_client() -> OpenAICompatibleClient | StubLLMClient:
     """
 
     base_url = os.getenv("LLM_BASE_URL")
-    api_key = os.getenv("LLM_API_KEY")
+    api_key = os.getenv("OPENAI_API_KEY") or os.getenv("LLM_API_KEY")
     model = os.getenv("LLM_MODEL")
+
+    if base_url and model and not api_key:
+        raise ValueError("OPENAI_API_KEY is required when LLM_BASE_URL and LLM_MODEL are set.")
 
     if base_url and api_key and model:
         return OpenAICompatibleClient(base_url=base_url, api_key=api_key, model=model)
@@ -53,13 +56,16 @@ def _build_llm_client() -> OpenAICompatibleClient | StubLLMClient:
     )
 
 
+_LLM_CLIENT = _build_llm_client()
+
+
 @feedback_router.post(
     "/analyze",
     response_model=FeedbackResponse | ErrorResponse,
     status_code=status.HTTP_200_OK,
 )
 def analyze_feedback(payload: FeedbackRequest) -> FeedbackResponse | ErrorResponse:
-    agent = FeedbackAgent(llm_client=_build_llm_client())
+    agent = FeedbackAgent(llm_client=_LLM_CLIENT)
 
     try:
         agent.validate_content_length(payload.content)
